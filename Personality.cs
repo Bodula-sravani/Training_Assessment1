@@ -4,18 +4,17 @@
     internal class Personality
     {
         public string name;
-        public DateTime date;
-        public string gender;
+        public DateTime DOB;
         public string personalityType;
         public string zodiac;
+        
         public Personality()
         {
-
             Console.WriteLine("Enter your name: ");
             this.name = Console.ReadLine();
             Console.WriteLine("Enter your DOB in format YYYY-MM-DD");
             int[] tempDate = Array.ConvertAll(Console.ReadLine().Trim().Split('-').ToArray(), int.Parse);
-            this.date = new DateTime(tempDate[0], tempDate[1], tempDate[2]);
+            this.DOB = new DateTime(tempDate[0], tempDate[1], tempDate[2]);
         }
         public void predictPersonality()
         {
@@ -90,8 +89,8 @@
 
         public void zodiacSign()
         {
-            int month = this.date.Month;
-            int day = this.date.Day;
+            int month = this.DOB.Month;
+            int day = this.DOB.Day;
 
             if ((month == 3 && day >= 21) || (month == 4 && day <= 19))
             {
@@ -143,25 +142,16 @@
             }
         }
 
-        public void CalcAge()
+        public static void CalcAge(DateTime dob)
         {
-            int age = (int)((DateTime.Now - this.date).TotalDays / 365.242199);
-            Console.WriteLine($"{this.name}, you are {age} years old");
+            int age = (int)((DateTime.Now - dob).TotalDays / 365.242199);
+            Console.WriteLine($"You are {age} years old");
         }
 
-        public void CalcAge(DateTime dob)
-        {
-            int age = (int)((DateTime.Now - this.date).TotalDays / 365.242199);
-            Console.WriteLine($"{this.name}, you are {age} years old");
-        }
         public void printDetails()
         {
-            Console.WriteLine($"Name      DOB     Gender        Zodiac\n{this.name}     {this.date}     {this.gender}       {this.zodiac}");
+            Console.WriteLine($"Name      DOB        Zodiac\n{this.name}     {this.DOB}       {this.zodiac}");
         }
-
-
-        
-
     }
 
     public class Matchmaking
@@ -193,20 +183,19 @@
             int[] tempDate = Array.ConvertAll(Console.ReadLine().Trim().Split('-').ToArray(), int.Parse);
             DateTime dob = new DateTime(tempDate[0], tempDate[1], tempDate[2]);
 
-            string zodiac_sign="";
-            foreach (Personality p in persons)
+            string zodiac_sign = "";
+            foreach(Personality p in persons)
             {
-                if (p.date == dob)
+                if(p.DOB == dob)
                 {
                     zodiac_sign = p.zodiac;
                 }
             }
+
             Console.WriteLine("you are compatabile with following people");
             Console.WriteLine($"Name        personalityType     Zodiac");
             foreach (Personality p in persons)
             {
-                if (p.date != dob)
-                {
                     if (FireSigns.Contains(zodiac_sign) || AirSigns.Contains(zodiac_sign))
                     {
                         if (FireSigns.Contains(p.zodiac) || AirSigns.Contains(p.zodiac))
@@ -222,20 +211,10 @@
                         }
 
                     }
-                }
             }
         }
 
-        public void age()
-        {
-            foreach (Personality p in persons)
-            {
-                p.CalcAge();
-                Console.WriteLine();
-            }
-        }
-
-        static void main(string[] args)
+        static void Main(string[] args)
         {
             Console.WriteLine("Welcome to the Application");
 
@@ -254,18 +233,13 @@
                         {
 
                             Console.WriteLine("Lets procceed to identify your personality");
-                            
+
                             Console.WriteLine();
                             Console.WriteLine();
                             Console.WriteLine("Do you want to predict your personality? Y/N");
                             proceed = Convert.ToBoolean(Console.ReadLine().ToLower() == "y" ? true : false);
-                            // List<Personality> persons = new List<Personality>();
-                            
                             while (proceed)
                             {
-                                Personality p = new Personality();
-                                p.predictPersonality();
-                                //persons.Add(p);
                                 match.addPerson();
                                 Console.WriteLine("Do you want to predict another personality? Y/N");
                                 proceed = Convert.ToBoolean(Console.ReadLine().ToLower() == "y" ? true : false);
@@ -292,21 +266,14 @@
                         }
                     case 3:
                         {
-
-                            /*Console.WriteLine();
-                            Console.WriteLine();
-                            Console.WriteLine("Lets calculate and display your ages");
-                            Console.WriteLine();
-                            match.age();*/
-
                             Console.WriteLine();
                             Console.WriteLine();
                             Console.WriteLine("Lets calculate your age");
                             Console.WriteLine("Enter your DOB in format YYYY-MM-DD to proceed");
                             int[] tempDate = Array.ConvertAll(Console.ReadLine().Trim().Split('-').ToArray(), int.Parse);
                             DateTime dob = new DateTime(tempDate[0], tempDate[1], tempDate[2]);
-                            Personality p = new Personality();
-                            p.CalcAge(dob);
+                            
+                            Personality.CalcAge(dob);
                             break;
                         }
                     case 4:
@@ -317,12 +284,9 @@
                             break;
                         }
                 }
-
             } while (option != 4);
         }
-      
     }
-
 }
         
 
