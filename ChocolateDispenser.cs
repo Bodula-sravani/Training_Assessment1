@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,33 +14,24 @@ namespace Assessement
 {
     internal class Dispenser
     {
-        //public Dictionary<String, int> chocolates = new Dictionary<string, int>();
-
         public List<Dictionary<string,int>> dispenser_chocolates = new List<Dictionary<string,int>>();
         public int totalChocolates;
         static int maxLimit = 100;
         public Dispenser()
         {
-            this.dispenser_chocolates.Add(Dispenser.add("green", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("silver", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("blue", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("crimson", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("purple", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("red", 10));
-            this.dispenser_chocolates.Add(Dispenser.add("pink", 10));
+            addChocolates("green", 10);
+            addChocolates("silver", 10);
+            addChocolates("blue", 10);
+            addChocolates("crimson", 10);
+            addChocolates("purple", 10);
+            addChocolates("red", 10);
+            addChocolates("pink", 10);
             totalChocolates = 70;
             
         }
-
-        public static Dictionary<string,int> add(string color,int count)
+        public void addChocolates(String color,int count)   // TO ADD CHOCOLATES FROM TOP
         {
-            Dictionary<string, int> chocolates = new Dictionary<string, int>();
-            chocolates[color] = count;
-            return chocolates;
-        }
-        public void addChocolates(String color,int count)
-        {
-            Dictionary<string, int> chocolates = new Dictionary<string, int>();
+            Dictionary<string, int> chocolates = new Dictionary<string, int>();  
 
             chocolates.Add(color,count);
             this.dispenser_chocolates.Add(chocolates);
@@ -51,8 +43,7 @@ namespace Assessement
                 removeChocolates(totalChocolates-maxLimit);
             }
         }
-
-        public bool DispenserEmpty()
+        public bool DispenserEmpty()   // TO CHECK IF DISENSER IS EMPTY OR NOT
         {
             if (this.dispenser_chocolates.Count == 0)
             {
@@ -66,18 +57,17 @@ namespace Assessement
             Dictionary<String, int> chocos = new Dictionary<string, int>();
             Dictionary<string, int> chocolates = new Dictionary<string, int>();
             
-            while (count > 0)
+            while (count > 0)      // WHILE COUNT !=0 WE TAKE EACH ELEMENT FROM LIST AND REDUCE ITEM VALUE 
             {
                 if (DispenserEmpty()) return null;
                 chocolates = dispenser_chocolates[dispenser_chocolates.Count-1];
-                dispenser_chocolates.RemoveAt(dispenser_chocolates.Count - 1);
+                dispenser_chocolates.RemoveAt(dispenser_chocolates.Count - 1);   //REMOVE TOP COLOR CHOCOLATES
                 foreach(var item in chocolates )
                 {
-                    if(item.Value>count)
+                    if(item.Value>=count)
                     {
-                        
                         chocolates[item.Key] = item.Value-count;
-                        this.dispenser_chocolates.Add(chocolates);
+                        this.dispenser_chocolates.Add(chocolates);    //ADDING THE REMAINING CHOCOLATES LEFT AFTER TAKING OUT COUNT
                         chocos.Add(item.Key, count);
                         this.totalChocolates -= count;
                         count = 0;
@@ -89,31 +79,25 @@ namespace Assessement
                         chocos.Add(item.Key, item.Value);
                     }
                 }
-
-           
             }
             return chocos;
- 
         }
-
-
-        public Dictionary<String,int> dispenseChocolates(int count)
+        public Dictionary<String,int> dispenseChocolates(int count)  //REMOVING CHOCOLATES FROM BOTTOM
         {
             Dictionary<String, int> chocos = new Dictionary<string, int>();
-            //Dictionary<string, int> chocolates = new Dictionary<string, int>();
             
             while (count > 0)
             {
                 if (DispenserEmpty()) return null;
                 Dictionary<string, int> chocolates = new Dictionary<string, int>();
                 chocolates = dispenser_chocolates[0];
-                dispenser_chocolates.RemoveAt(0);
+                dispenser_chocolates.RemoveAt(0);   //REMOVING BOTTOM COLOR CHOCOLATES
                 foreach (var item in chocolates)
                 {
                     if (item.Value >=count)
                     {
                         chocolates[item.Key] = item.Value - count;
-                        this.dispenser_chocolates.Insert(0,chocolates);
+                        this.dispenser_chocolates.Insert(0,chocolates);    //ADDING THE EXCESS
                         this.totalChocolates -= count;
                         chocos.Add(item.Key, count);
                         count = Math.Abs(item.Value - count);
@@ -128,20 +112,18 @@ namespace Assessement
             }
             return chocos;
         }
-
-        public Dictionary<String, int> dispenseChocolatesofColor(String color,int count)
+        public Dictionary<String, int> dispenseChocolatesofColor(String color,int count)  //REMOVE FROM BOTTOM USING COLOR AND COUNT
         {
             if (DispenserEmpty()) return null;
             Dictionary<String, int> chocos = new Dictionary<string, int>();
             bool colorExists = false;
-            for (int i=0;i<dispenser_chocolates.Count;i++)
+            for (int i=0;i<dispenser_chocolates.Count;i++)   
             {
                 Dictionary<string, int> chocolates = new Dictionary<string, int>();
                 chocolates = dispenser_chocolates[i];
-                //dispenser_chocolates.RemoveAt(0);
                 foreach (var item in chocolates)
                 {
-                    if (item.Key == color && count>0)
+                    if (item.Key == color && count>0)             
                     {
                         chocolates[item.Key] = Math.Abs(item.Value - count);
                         dispenser_chocolates[i] = chocolates;
@@ -162,25 +144,11 @@ namespace Assessement
             else return chocos;
         }
 
-        public Dictionary<String, int> noOfChocolates()
+        public Dictionary<String, int> noOfChocolates()  //STORING ALL CHOCOLATES IN ONE DICT IN A SPECIFIC  ORDER OF KEYS
         {
             if (DispenserEmpty()) return null;
             Dictionary<string, int> sortedchocolates = new Dictionary<string, int>();
-
-            for (int i = 0; i < dispenser_chocolates.Count - 1; i++)
-            {
-                foreach (var items in dispenser_chocolates[i])
-                {
-                    if (!sortedchocolates.ContainsKey(items.Key))
-                    {
-                        sortedchocolates.Add(items.Key, items.Value);
-                    }
-                    else
-                    {
-                        sortedchocolates[items.Key] += items.Value;
-                    }
-                }
-            }
+            sortedchocolates = createDict();    
             Dictionary<string, int> chocolates = new Dictionary<string, int>();
             chocolates.Add("green", sortedchocolates.GetValueOrDefault("green",0));
             chocolates["silver"] = sortedchocolates.GetValueOrDefault("silver", 0);
@@ -191,27 +159,11 @@ namespace Assessement
             chocolates["pink"] = sortedchocolates.GetValueOrDefault("pink", 0);
             return chocolates;
         }
-        public void SortChocolatedByCount()
+        public void SortChocolatedByCount()  
         {
             Dictionary<string, int> sortedchocolates = new Dictionary<string, int>();
-
-            for (int i = 0; i < dispenser_chocolates.Count; i++)
-            {
-                foreach (var items in dispenser_chocolates[i])
-                {
-                    if (!sortedchocolates.ContainsKey(items.Key))
-                    {
-                        sortedchocolates.Add(items.Key, items.Value);
-                    }
-                    else
-                    {
-                        sortedchocolates[items.Key] += items.Value;
-                    }
-                }
-
-            }
+            sortedchocolates = createDict();
             dispenser_chocolates.Clear();
-          
             foreach (var item in sortedchocolates.OrderByDescending(x => x.Value))
             {
 
@@ -219,7 +171,6 @@ namespace Assessement
                 chocolates.Add(item.Key, item.Value);
                 dispenser_chocolates.Add(chocolates);
             }
-            PrintDetails();
         }
 
         public void changeChocolateColor(string color , string newcolor , int count)
@@ -230,50 +181,30 @@ namespace Assessement
             {
                 Dictionary<string, int> chocolates = new Dictionary<string, int>();
                 chocolates = dispenser_chocolates[i];
-                
                 foreach (var item in chocolates)
                 {
-                    if (count > 0)
+                    if (item.Key == color && count > 0)
                     {
-
-                        if (item.Key == color && item.Value > count)
-                        {
-
-                            chocolates[item.Key] = item.Value - count;
-                            dispenser_chocolates[i] = chocolates;
-                            //chocos.Add(item.Key, count);
-                            //this.totalChocolates -= count;
-                            count = 0;
-                            break;
-                        }
-                        if (item.Key == color && item.Value <= count)
-                        {
-                            //this.totalChocolates -= item.Value;
-                            chocolates[item.Key] = count - item.Value;
-                            dispenser_chocolates[i] = chocolates;
-                            count -= item.Value;
-                            //chocos.Add(item.Key, item.Value);
-                        }
+                        chocolates[item.Key] = Math.Abs(item.Value - count);
+                        dispenser_chocolates[i] = chocolates;
+                        count = Math.Abs(item.Value - count);
                     }
                 }
                     if (chocolates.ContainsKey(newcolor))
                     {
                         chocolates[newcolor] += tempCount;
                         dispenser_chocolates[i] = chocolates;
+                        tempCount = 0;  
                         newColorExists = true;
-
                     }
                 }
-
             if(!newColorExists)
             {
                 Dictionary<string, int> chocolates = new Dictionary<string, int>();
                 chocolates[newcolor] = tempCount;
                 dispenser_chocolates.Add(chocolates);
-            }
-                        
+            }             
         }
-
         public int changeChocolateColorofAll(string oldcolor, string newcolor)
         {
             int result = 0;
@@ -281,44 +212,31 @@ namespace Assessement
             for (int i = 0; i < dispenser_chocolates.Count; i++)
             {
                 Dictionary<string, int> chocolates = new Dictionary<string, int>();
+                Dictionary<string, int> newChoco = new Dictionary<string, int>();
                 chocolates = dispenser_chocolates[i];
-                //dispenser_chocolates.RemoveAt(0);
                 foreach (var item in chocolates)
                 {
                     if (item.Key == oldcolor)
                     {
-                        //chocolates.Clear();
-                        //chocolates.Remove(item.Key);
-                        //chocolates[newcolor] = item.Value;
-                        //dispenser_chocolates[i] = chocolates;
-                        this.dispenser_chocolates[i]=(Dispenser.add(newcolor, item.Value));
+                        newChoco[newcolor] = item.Value;
+                        dispenser_chocolates[i] = newChoco;
                         result += item.Value;
-                        //chocos.Add(item.Key, count);
-                        //this.totalChocolates -= count;
-                        //count = 0;
+                        
                     }
                     if(item.Key == newcolor)
                     {
                         result += item.Value;
-
                     }
-
                 }
-                //if (count == 0) break;
             }
-
             return result;
         }
-
-
         public bool removeChocolateOfColor(string color)
         {
-            //Dictionary<String, int> chocos = new Dictionary<string, int>();
             Dictionary<string, int> chocolates = new Dictionary<string, int>();
             for (int i = dispenser_chocolates.Count - 1; i >= 0; i--)
             {
                 chocolates = dispenser_chocolates[i];
-                //dispenser_chocolates.RemoveAt(dispenser_chocolates.Count - 1);
                 foreach (var item in chocolates)
                 {
                     if (item.Key==color && item.Value >= 1)
@@ -326,24 +244,21 @@ namespace Assessement
 
                         chocolates[item.Key]--; ;
                         this.dispenser_chocolates[i] = chocolates;
-                        //chocos.Add(item.Key, item.Value - coun);
                         this.totalChocolates--;
                         return true;
-                        //count = 0;
                     }
-                 
                 }
             }
             return false;
             }
-            
-        public int dispenseRainbowChocolates()
+        public int dispenseRainbowChocolates()  //EVERY 3 SIMILAR CHOCO MAKE A RAINBOW CHOCOLATE RETURNS NO OF SUCH CHOCO
         {
             int result = 0;
             SortChocolatedByCount();
-            Dictionary<string, int> chocolates = new Dictionary<string, int>();
+            
             for (int i=0;i<dispenser_chocolates.Count;i++)
             {
+                Dictionary<string, int> chocolates = new Dictionary<string, int>();
                 chocolates = dispenser_chocolates[i];
                 foreach(var item in chocolates)
                 {
@@ -352,12 +267,8 @@ namespace Assessement
             }
             return result;
         }
-        
-
-
         public void PrintDetails()
         {
-
             if (this.dispenser_chocolates.Count == 0)
             {
                 Console.WriteLine("Dispenser is Empty!!!!");
@@ -372,17 +283,31 @@ namespace Assessement
                     {
                         Console.WriteLine($"  {item.Key}          {item.Value}  ");
                     }
-
                 }
-
                 Console.WriteLine($"Total chocolates:    {this.totalChocolates}");
             }
-
             Console.WriteLine();
         }
-
-
-        public static void printDict(Dictionary<string,int> d)
+        public  Dictionary<string,int> createDict()   //CREATES ONE DICT STORING ALL CHOCLATES KEYS AS COLOR AND VALUE AS COUNT
+        {
+            Dictionary<string, int> dictChocolates = new Dictionary<string, int>();
+            for (int i = 0; i <dispenser_chocolates.Count - 1; i++)
+            {
+                foreach (var items in dispenser_chocolates[i])
+                {
+                    if (dictChocolates.ContainsKey(items.Key))
+                    {
+                        dictChocolates[items.Key] += items.Value;
+                    }
+                    else
+                    {
+                        dictChocolates.Add(items.Key, items.Value);
+                    }
+                }
+            }
+            return dictChocolates;
+        }
+        public static void printDict(Dictionary<string,int> d)   //IN CASE A DICT IS NEEDED TO BE PRINTED JUST TO REUSE
         {
             Console.WriteLine("| Color        Count |");
            
@@ -393,8 +318,6 @@ namespace Assessement
             }
             Console.WriteLine();
         }
-
-
         public static void Main(string[] strings)
         {
             Dispenser machine = new Dispenser();
@@ -425,7 +348,6 @@ namespace Assessement
                             }
                             break;
                         }
-                    //machine.PrintDetails();
                     case 3:
                         {
                             d = null;
@@ -437,7 +359,6 @@ namespace Assessement
                             }
                             break;
                         }
-                    //machine.PrintDetails();
                     case 4:
                         {
 
@@ -450,7 +371,6 @@ namespace Assessement
                             }
                             break;
                         }
-                    //machine.PrintDetails();
                     case 5:
                         {
 
@@ -460,6 +380,7 @@ namespace Assessement
                             {
                                 Console.WriteLine("List of chocolates in sorted order");
                                 Dispenser.printDict(d);
+                                
                             }
                             break;
                         }
@@ -467,6 +388,7 @@ namespace Assessement
                         {
                             Console.WriteLine("List of chocolates in sorted by count");
                             machine.SortChocolatedByCount();
+                            machine.PrintDetails();
                             break;
                         }
 
@@ -491,7 +413,6 @@ namespace Assessement
                             machine.PrintDetails();
                             break;
                         }
-                    //machine.PrintDetails();
                     case 10:
                         {
                             Console.Write("Rainbow color chocolates:  ");
